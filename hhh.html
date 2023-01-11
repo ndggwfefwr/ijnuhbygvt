@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Internet Speed Test</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+	<style>
+	#container {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+#start-test {
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+	</style>
+</head>
+
+<body>
+    <div id="container">
+        <h2 id="download-speed">Download Speed:</h2>
+        <h2 id="upload-speed">Upload Speed:</h2>
+        <button id="start-test" onclick="startTest()">Start Test</button>
+    </div>
+
+    <script type="text/javascript">
+        function startTest() {
+            // Disable the start button
+            document.getElementById("start-test").disabled = true;
+
+            // Set the test file url
+            var url = 'testfile.txt';
+            var startTime, endTime;
+
+            // Measure download speed
+            startTime = (new Date()).getTime();
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    endTime = (new Date()).getTime();
+                    var duration = (endTime - startTime) / 1000;
+                    var bitsLoaded = xhr.responseText.length * 8;
+                    var speedBps = (bitsLoaded / duration).toFixed(2);
+                    var speedKbps = (speedBps / 1024).toFixed(2);
+                    var speedMbps = (speedKbps / 1024).toFixed(2);
+
+                    // Display download speed
+                    document.getElementById("download-speed").innerHTML = "Download Speed: " + speedMbps + " Mbps";
+
+                    // Measure upload speed
+                    startTime = (new Date()).getTime();
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            endTime = (new Date()).getTime();
+                            var duration = (endTime - startTime) / 1000;
+                            var bitsLoaded = xhr.responseText.length * 8;
+                            var speedBps = (bitsLoaded / duration).toFixed(2);
+                            var speedKbps = (speedBps / 1024).toFixed(2);
+                            var speedMbps = (speedKbps / 1024).toFixed(2);
+
+                            // Display upload speed
+                            document.getElementById("upload-speed").innerHTML = "Upload Speed: " + speedMbps + " Mbps";
+
+                            // Enable the start button
+                            document.getElementById("start-test").disabled = false;
+                        }
+                    };
+                    xhr.send(xhr.responseText);
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+
+</html>
